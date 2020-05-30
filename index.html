@@ -9,11 +9,11 @@
 	<div id="app">
 		<ol>
 		  <!-- Create an instance of the todo-item component -->
-		  <todo-item v-for="item in groceryList" v-bind:todo="item" v-bind:key="item.id"></todo-item> 
+		  <todo-item @task_done="delete_task(index)" v-for="(item, index) in groceryList" v-bind:todo="item" :key="index" :data="item"></todo-item> 
 		</ol>
 
 		<input v-model="message">
-		<button v-on:click="groceryList.push({text:message})">console Value</button>
+		<button v-on:click="groceryList.push({text:message})">add Value</button>
 		<input type="checkbox" v-on:click="makeActive('container', $event)" ref="plus" v-bind:class="{'active' : activeButton === $refs.plus}">
 	</div>
 
@@ -21,7 +21,12 @@
 	<script>
 		Vue.component('todo-item', {
 			props: ['todo'],
-			template: '<li><span>{{ todo.text }}<button v-on:click="this.splice()">Delete</button></span></li>'
+			methods: {
+				task_done(){
+			      this.$emit('task_done')
+			    },
+			},
+			template: '<li><span>{{ todo.text }}<button title="Удалить?" class="task__done" @click="task_done()">delete</button></span></li>'
 		})
 		var app = new Vue ({
 			el: '#app',
@@ -36,13 +41,18 @@
     activeButton: null
 			    
 			},
+			
 			methods: {
-        makeActive: function(item, e){
-          // When a model is changed, the view will be automatically updated.
-          this.active = item;
-          this.activeButton = e.target
-        }
-    }
+		        makeActive: function(item, e){
+		          // When a model is changed, the view will be automatically updated.
+		          this.active = item;
+		          this.activeButton = e.target
+		        },
+		        
+		        delete_task(id){
+			      this.groceryList.splice(id,1);
+			    }
+			}
 			// methods: {
 			// 	consoleValue: function () {
 			// 		var elem = this.message;
